@@ -1,6 +1,4 @@
 import math
-import random
-from datetime import datetime
 
 def createContext(k,filename):
 
@@ -36,6 +34,7 @@ def createContext(k,filename):
     return table
 
 def calculateProbabilities(table,alpha):
+    
     prob_table = {}
     sum_total = 0
 
@@ -55,6 +54,7 @@ def calculateProbabilities(table,alpha):
     return prob_table,sum_total
 
 def calculateEntropy(table,prob_table,sum_total):
+    
     model_entropy = 0
     for i in prob_table.keys():
         submodel_entropy = 0
@@ -66,69 +66,3 @@ def calculateEntropy(table,prob_table,sum_total):
         context_prob = sum / sum_total
         model_entropy += submodel_entropy * context_prob 
     return model_entropy
-
-#######################MAIN############################
-start = datetime.now()
-
-k = 3
-alpha = 0.1
-table = createContext(k,'example.txt')
-prob_table,sum_total = calculateProbabilities(table,alpha)
-entropy = calculateEntropy(table,prob_table,sum_total)
-print("--------------------------------------------------------------")
-print("-------------------------FCM RESULTS--------------------------")
-print("--------------------------------------------------------------")
-print("For k = " + str(k) + " and alpha = " + str(alpha))
-print("Entropy of the model: " + str(entropy))
-#######################GENERATOR############################
-text = "thi"
-state = 'thi'
-length = 700
-
-
-while len(text) != length:
-    if state not in prob_table.keys():
-        text += " "
-        aux = random.choices(list(prob_table.keys()))
-        c = ' '.join(aux)
-        state = c
-    i = 0
-    index = 0
-    new_state = ""
-    #print("state : " + str(state))
-    letter = random.choices(population=list(prob_table[state].keys()), weights=prob_table[state].values())
-    car = ' '.join(letter)
-    text += car
-    #print("text : " + str(text))
-    while i < k-1:
-        new_state += state[index+1]
-        i += 1
-        index += 1
-    new_state += car
-    #print("newstate : " + str(new_state))
-    state = new_state
-
-print("--------------------------------------------------------------")
-print("------------------------TEXT GENERATED------------------------")
-print("--------------------------------------------------------------")
-
-print(text)
-
-print("--------------------------------------------------------------")
-print("------------------------EXECUTION TIME------------------------")
-print("--------------------------------------------------------------")
-print(str(datetime.now() - start))
-
-
-
-
-
-
-# k = 3 | 0.1 -> 2.6
-# k = 2 | 1   -> 2
-# k = 4 | 0.1 -> 1.9
-
-#EXPECTED
-#k=2   a=1      H=2.5352
-#k=3   a=1/10   H=1.9699
-#k=4   a=1/10   H=1.6893
